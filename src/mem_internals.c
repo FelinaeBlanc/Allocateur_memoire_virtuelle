@@ -16,16 +16,49 @@ unsigned long knuth_mmix_one_round(unsigned long in)
 }
 
 void *mark_memarea_and_get_user_ptr(void *ptr, unsigned long size, MemKind k)
-{
-    /* ecrire votre code ici */
-    return (void *)0;
+{mark_memarea_and_get_user_ptr= knuth_mmix_one_round( (unsigned long)ptr);
+    magic_number = (magic_number & ~(0b11UL)) + (k & 0b11UL);
+    printf(" \n UWU??? [%lu] \n ",magic_number);
+    // Initialisation Pointeur Début
+    unsigned long *ptr_debut = (unsigned long *) ptr;
+    *ptr_debut = size;
+
+    // Magic Number Début
+    unsigned long *ptr_magic_number_debut = ptr_debut + 1;
+    *ptr_magic_number_debut = magic_number;
+
+    // Magic Number Fin
+    unsigned long *ptr_magic_number_fin = ptr_debut + size - 2;
+    *ptr_magic_number_fin = magic_number; 
+    
+    // Size Fin
+    unsigned long *ptr_size_fin = ptr_magic_number_fin + 1;
+    *ptr_size_fin = size;
+
+    // Réalisation Pointeur Début Mémoire
+    void *ptr_debut_memoire = ptr_debut + 2;
+
+    return ptr_debut_memoire;
 }
 
-Alloc
-mark_check_and_get_alloc(void *ptr)
-{
-    /* ecrire votre code ici */
+Alloc mark_check_and_get_alloc(void *ptr) {
+    unsigned long *ptr_debut = (unsigned long *) ptr;
+
+    // Size début
+    unsigned long size_debut = *(ptr_debut - 4);
+    unsigned long magic_debut = *(ptr_debut - 2);
+
+    unsigned long magic_fin = *(ptr_debut + size_debut - 8);
+    //unsigned long size_fin = *(ptr_debut + size - 4);
+
+    MemKind k = magic_debut & 0b11UL;
+    assert( magic_debut == magic_fin );
+
     Alloc a = {};
+    a.size = size_debut;
+    a.kind = k;
+    a.ptr = (ptr - 4);
+
     return a;
 }
 
