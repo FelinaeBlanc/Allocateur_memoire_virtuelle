@@ -20,22 +20,34 @@ void *mark_memarea_and_get_user_ptr(void *ptr, unsigned long size, MemKind k)
     // Réalisation Magic Number
     unsigned long magic_number = knuth_mmix_one_round( (unsigned long)ptr);
     magic_number = (magic_number & ~(0b11UL)) + (k & 0b11UL);
-    printf(" \n UWU??? [%lu] [%d] \n ",magic_number,k);
+    
     // Initialisation Pointeur Début
     unsigned long *ptr_debut = (unsigned long *) ptr;
-    *ptr_debut = size;
+    *ptr_debut = size; // Ajoute Size au début
 
-    // Magic Number Début
-    unsigned long *ptr_magic_number_debut = ptr_debut + 1;
-    *ptr_magic_number_debut = magic_number;
+    // Création pointeur que l'on va bouger
+    unsigned long *ptr_move = ptr_debut;
 
-    // Magic Number Fin
-    unsigned long *ptr_magic_number_fin = ptr_debut + size - 2;
-    *ptr_magic_number_fin = magic_number; 
+    // Magic Number Debut
+    ptr_move += 1; // Déplace de 8 octets
+    *ptr_move = magic_number; // Magic Number début
+
+    // On atteint l'endroit mémoire demandé par l'utilisateur
+    ptr_move += 1;
+
+    // On saute de (size - 32 octets) pour atteindre l'autre côté !
+    char *ptr_char = (char *) ptr_move;
+    ptr_char += size - 32;
     
+
+    // Magic number Fin !
+    ptr_move = (unsigned long *) ptr_char;
+    *ptr_move = magic_number;
+
     // Size Fin
-    unsigned long *ptr_size_fin = ptr_magic_number_fin + 1;
-    *ptr_size_fin = size;
+    ptr_move += 1;
+    *ptr_move = size;
+
 
     // Réalisation Pointeur Début Mémoire
     void *ptr_debut_memoire = ptr_debut + 2;
@@ -47,11 +59,17 @@ Alloc mark_check_and_get_alloc(void *ptr) {
     unsigned long *ptr_debut = (unsigned long *) ptr;
 
     // Size début
-    unsigned long size_debut = *(ptr_debut - 4);
-    unsigned long magic_debut = *(ptr_debut - 2);
+    unsigned long size_debut = *(ptr_debut - 2);
+    unsigned long magic_debut = *(ptr_debut - 1);
 
-    unsigned long magic_fin = *(ptr_debut + size_debut - 8);
-    //unsigned long size_fin = *(ptr_debut + size - 4);
+    // On atteint l'autre côté
+    // On saute de (size - 32 octets) pour atteindre l'autre côté !
+    char *ptr_char = (char *) ptr_debut;
+    ptr_char += size_debut - 32;
+    
+    // Magin Fin
+    unsigned long *ptr_move = (unsigned long *) ptr_char;
+    unsigned long magic_fin = *ptr_move;
 
     MemKind k = magic_debut & 0b11UL;
     assert( magic_debut == magic_fin );
@@ -59,7 +77,7 @@ Alloc mark_check_and_get_alloc(void *ptr) {
     Alloc a = {};
     a.size = size_debut;
     a.kind = k;
-    a.ptr = (ptr - 4);
+    a.ptr = (ptr_debut - 2);
 
     return a;
 }
