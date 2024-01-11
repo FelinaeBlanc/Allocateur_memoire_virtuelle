@@ -16,9 +16,11 @@ unsigned long knuth_mmix_one_round(unsigned long in)
 }
 
 void *mark_memarea_and_get_user_ptr(void *ptr, unsigned long size, MemKind k)
-{mark_memarea_and_get_user_ptr= knuth_mmix_one_round( (unsigned long)ptr);
+{
+    // Réalisation Magic Number
+    unsigned long magic_number = knuth_mmix_one_round( (unsigned long)ptr);
     magic_number = (magic_number & ~(0b11UL)) + (k & 0b11UL);
-    printf(" \n UWU??? [%lu] \n ",magic_number);
+    printf(" \n UWU??? [%lu] [%d] \n ",magic_number,k);
     // Initialisation Pointeur Début
     unsigned long *ptr_debut = (unsigned long *) ptr;
     *ptr_debut = size;
