@@ -12,24 +12,30 @@ void * emalloc_small(unsigned long size)
 {
     if (arena.chunkpool == NULL){
         unsigned long tailleOctet = mem_realloc_small();
-        void* ptr_small_mem = arena.chunkpool;
-        
+        unsigned long * ptr_small_mem = (unsigned long *) arena.chunkpool;
+        void *next_ptr;
+
         // écrit les adresses pour la listes !
         do {
-            (*ptr_small_mem) = ptr_small_mem+96;
-            ptr_small_mem += 96; // Bouge de 96 octets
-            tailleOctet -= 96:
+            // On avance de 96 octets pour faire référence au prochain élement
+            next_ptr = (void *) ptr_small_mem;
+            next_ptr += 96;
+
+            *ptr_small_mem = (unsigned long) next_ptr;
+            ptr_small_mem = (unsigned long *) next_ptr;
+            tailleOctet -= 96;
         } while( tailleOctet > 96 );
-        //mark_memarea_and_get_user_ptr(ptr_small_mem,96,SMALL_KIND);
     }
 
     // Chunk pool valide, on prend le 1er !
     void* ptr_chunk_start = arena.chunkpool;
-    arena.chunkpool = (*ptr_chunk_start);
+    unsigned long * ptr_to_val_next_prt = (unsigned long *) ptr_chunk_start;
+
+    arena.chunkpool = (void *) (*ptr_to_val_next_prt);
 
     return mark_memarea_and_get_user_ptr(ptr_chunk_start,96,SMALL_KIND);
 }
 
 void efree_small(Alloc a) {
-    /* ecrire votre code ici */
+
 }
