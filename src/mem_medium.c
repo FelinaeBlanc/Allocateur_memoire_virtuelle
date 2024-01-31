@@ -73,6 +73,9 @@ void * emalloc_medium(unsigned long size)
 
 
 void efree_medium(Alloc a) {
+
+    
+    printf("FREE MEDIUM ! %u \n",nb_TZL_entries());
     unsigned int indice = puiss2(a.size);
     unsigned int maxIndice = (FIRST_ALLOC_MEDIUM_EXPOSANT + arena.medium_next_exponant);
 
@@ -81,7 +84,7 @@ void efree_medium(Alloc a) {
     void * prev = NULL;
     void * addrBloc = arena.TZL[indice];
     while(addrBloc != NULL){
-        printf("Check ListBloc ! \n");
+        //printf("Check ListBloc ! \n");
         unsigned long * adresseBuddyB = (unsigned long *) ((unsigned long)addrBloc ^ (unsigned long)pow(2,indice));
         if (adresseBuddyA == addrBloc && adresseBuddyB == a.ptr){
             // On a trouver son poto ! on remonte d'un indice uwu
@@ -95,6 +98,7 @@ void efree_medium(Alloc a) {
             // On l'ajoute au dessus
             // Si on a atteint, la fin on arrête !
             if (indice == maxIndice){
+                printf("UWUAAA\n");
                 return;
             }
             // Sinon, on ajoute le buddy le plus petit dessus!
@@ -102,13 +106,13 @@ void efree_medium(Alloc a) {
             unsigned long * adrFirstBuddy = (adresseBuddyB < adresseBuddyA) ? adresseBuddyB : adresseBuddyA ;
             (*adrFirstBuddy) =  (unsigned long) arena.TZL[indice];
             arena.TZL[indice] = (void *)adrFirstBuddy;
-
-            printf("FOUND BUDDY !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+            printf("FOUND BUDDY ! %p ET %p FIRST=%p %f\n",adresseBuddyB,adresseBuddyA,adrFirstBuddy,pow(2,indice));
             
 
             // Reset prev
             prev = NULL;
             addrBloc = arena.TZL[indice];
+            continue;
         }
 
         // va au prochain
