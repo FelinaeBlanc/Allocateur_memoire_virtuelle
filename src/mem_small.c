@@ -37,5 +37,9 @@ void * emalloc_small(unsigned long size)
 }
 
 void efree_small(Alloc a) {
+    unsigned long * ptr_case_memoire = (unsigned long *) a.ptr;
+    *ptr_case_memoire = (unsigned long) arena.chunkpool;
 
+    arena.chunkpool = ptr_case_memoire;
+//    *arena.chunkpool = *a;
 }
