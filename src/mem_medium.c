@@ -44,13 +44,22 @@ void * emalloc_medium(unsigned long size)
     }
 
     for (uint32_t i=minUsable;i>minIndice;i--){
-        // Faire couper en 2 ! + on le met en dessous !
-    }
-    
-    // Si un bloc est disponible, il est marqué et l’adresse utilisateur est retournée
-    
+        // Faire couper en 2 !
+        float * firstBloc = (float *) arena.TZL[i];
+        float * secondBloc =  (float *) ( ((char *) arena.TZL[i]) + (math.pow(2,(i-1) )) );
 
-    return (void *) 0;
+        // On bouge la liste des éléments libre, on vire le 1er et on prend le prochain !
+        arena.TZL[i] =  (void *)(*firstBloc); 
+
+        (* firstBloc) = secondBloc; // Le prochain du 1er bloc coupé est son autre moitié !
+        arena.TZL[i-1] = (void *) firstBloc;
+        
+    }
+
+    // Si un bloc est disponible, il est marqué et l’adresse utilisateur est retournée
+    (void *) bloc = arena.TZL[minIndice];
+
+    return mark_memarea_and_get_user_ptrr(bloc,math.pow(2,minIndice),MEDIUM_KIND);
 }
 
 
