@@ -13,7 +13,7 @@
 TEST(Medium,buddy) {
   constexpr unsigned long ALLOC_MEM_SIZE = FIRST_ALLOC_MEDIUM/2;
 
-  void *mref = emalloc(ALLOC_MEM_SIZE); // first allocation
+  void *mref = emalloc(ALLOC_MEM_SIZE); // first allocation 65536
   ASSERT_NE( mref, (void*) 0);
   memset(mref, 1, ALLOC_MEM_SIZE);
   ASSERT_EQ( nb_TZL_entries(), 0U);
