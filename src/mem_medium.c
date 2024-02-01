@@ -22,7 +22,6 @@ unsigned int puiss2(unsigned long size) {
     return p;
 }
 
-//int passe = 0;
 void * emalloc_medium(unsigned long size)
 {
     assert(size < LARGEALLOC);
