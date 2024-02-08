@@ -66,14 +66,13 @@ TEST(Basic, oneallocloopsmall) {
 
 TEST(Basic, oneallocloopmedium) {
     vector<void *> tab(100);
-    
     for (auto &t : tab) {
-	t = emalloc(65);
-	ASSERT_NE( t, nullptr );
-	memset(t, 1, 65);
+      t = emalloc(65);
+      ASSERT_NE( t, nullptr );
+      memset(t, 1, 65);
     }
     for (auto t: tab) {
-	efree(t);
+      efree(t);
     }
 }
 
@@ -98,7 +97,7 @@ TEST(Generic, loopevenoddsmall) {
 }
 
 TEST(Generic, loopevenoddmedium) {
-  constexpr int nb=2*50;
+  constexpr int nb=50*2;
   vector<void *> tab(nb);
 
   for(auto &t: tab)
@@ -107,6 +106,7 @@ TEST(Generic, loopevenoddmedium) {
       ASSERT_NE( t, (void *)0 );
       memset(t, 1, 65);
     }
+
   for(int i=0; i < nb; i+=2)
     {
       efree( tab[i] );
@@ -115,6 +115,7 @@ TEST(Generic, loopevenoddmedium) {
     {
       efree( tab[i] );
     }
+
 }
 
 TEST(Generic, aleatoire) {
